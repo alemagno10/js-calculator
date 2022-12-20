@@ -1,7 +1,7 @@
 class CalcController {
     constructor(){
         this.entrys = {'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%', 'ponto': '.'};
-        this._memory = [];
+        this._memory = ['0'];
         this._temp = false;
         this._resetMemory = false;
         this.locale = 'pt-BR';
@@ -37,6 +37,9 @@ class CalcController {
     }
 
     addEntry(value){
+        console.log(this.getLastValue())
+        if(this._memory[0] == '0'){this._memory.pop()}
+        
         if((value === '.') && (isNaN(this.getLastValue(1) || this._memory.length === 0))){
             this._memory.push('0.')
         }
@@ -45,7 +48,6 @@ class CalcController {
             else{this._memory[this.getLastIndex(1)] = value}  
         }
         else if(value === '%'){
-            this.getResult(); 
             this.percent(false)
         }
         else if(this._memory.length === 0 && !isNaN(value)){
@@ -62,11 +64,12 @@ class CalcController {
         else{
             this._memory.push(value)
             this._temp = true;
-        }  
+        }
+        
     }
 
     execBtn(value){
-        if(value === 'ac'){this._memory = []}
+        if(value === 'ac'){this._memory = ['0']}
 
         else if(value === 'ce'){
             let lastInd = this.getLastIndex(1);
@@ -104,6 +107,7 @@ class CalcController {
     }
 
     setDisplaDateTime(){
+        this.displayCalc = this._memory.join(' ');
         this.displayDate = this.currentDate.toLocaleDateString(this.locale);
         this.displayTime = this.currentDate.toLocaleTimeString(this.locale, {hour: '2-digit', minute:'2-digit'});
     }
