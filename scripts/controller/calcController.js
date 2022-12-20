@@ -2,6 +2,7 @@ class CalcController {
     constructor(){
         this.entrys = {'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%', 'ponto': '.'};
         this._memory = ['0'];
+        this._lastOperation = 0;
         this._temp = false;
         this._resetMemory = false;
         this.locale = 'pt-BR';
@@ -27,9 +28,10 @@ class CalcController {
 
     percent(bool){
         if(bool){this._memory.pop()}
-        this._memory[this.getLastIndex(1)] = this.getLastValue(1) / 100;
+        this.memory = this.getLastValue(1) / 100;
         this.getResult()
     }
+
     getResult(){
         let result = eval(this._memory.join(' '));
         if(result.toString().length > 10){result = result.toFixed(8)};
@@ -37,7 +39,6 @@ class CalcController {
     }
 
     addEntry(value){
-        console.log(this.getLastValue())
         if(this._memory[0] == '0'){this._memory.pop()}
         
         if((value === '.') && (isNaN(this.getLastValue(1) || this._memory.length === 0))){
@@ -45,7 +46,7 @@ class CalcController {
         }
         else if(isNaN(this.getLastValue(1)) && isNaN(value)){
             if(value === '%'){this.percent(true)}
-            else{this._memory[this.getLastIndex(1)] = value}  
+            else{this.memory = value}  
         }
         else if(value === '%'){
             this.percent(false)
@@ -54,7 +55,7 @@ class CalcController {
             this._memory.push(value)
         }
         else if(!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')){
-            this._memory[this.getLastIndex(1)] = this.getLastValue(1) + value; 
+            this.memory = this.getLastValue(1) + value; 
         }
         else if(this._temp && isNaN(value)){
             this.getResult()
@@ -69,7 +70,10 @@ class CalcController {
     }
 
     execBtn(value){
-        if(value === 'ac'){this._memory = ['0']}
+        if(value === 'ac'){
+            this._memory = ['0'];
+            this.lastOperation = ''; 
+        }
 
         else if(value === 'ce'){
             let lastInd = this.getLastIndex(1);
@@ -80,18 +84,19 @@ class CalcController {
         else if(Object.keys(this.entrys).includes(value)){this.addEntry(this.entrys[value])}
 
         else if(value === 'igual'){
+            if(this.memory.length > 1){this.lastOperation = this.memory[this.getLastIndex(2)] + this.memory[this.getLastIndex(1)]}
+            else{console.log(this.memory); this._memory.push(this.lastOperation); console.log(this.memory)}
             this.getResult();
             this._resetMemory = true;
         }
 
         else{
-            if(this._resetMemory === true){
+            if(this._resetMemory === true && isNaN(value)){
                 this._memory = [];
                 this._resetMemory = false;
             };
             this.addEntry(value);
         };
-    
         this.displayCalc = this._memory.join(' ');
     }
 
@@ -123,4 +128,10 @@ class CalcController {
 
     get currentDate(){return new Date()}
     set currentDate(value){this._currentDate = value}
+
+    get memory(){return this._memory}
+    set memory(value){this._memory[this.getLastIndex(1)] = value}
+
+    get lastOperation(){return this._lastOperation}
+    set lastOperation(value){this._lastOperation = value}
 };
