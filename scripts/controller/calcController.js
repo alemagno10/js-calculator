@@ -1,6 +1,6 @@
 class CalcController {
     constructor(){
-        this.entrys = {'igual': '=', 'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%'};
+        this.entrys = {'igual': '=', 'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%', 'ponto': '.'};
         this._memory = [];
         this.locale = 'pt-BR';
         this._displayCalcEl = document.getElementById('display');
@@ -20,11 +20,20 @@ class CalcController {
         events.forEach(event => {element.addEventListener(event, func, false);})
     }
 
+    getLastValue(){return this._memory[this._memory.lenght - 1]}
+    getLastIndex(){return this._memory.lenght - 1}
+
+    addEntry(value){
+        if(this._memory.length === 0){this._memory.push(value)}
+        else{this._memory.pop(this.getLastValue())}
+        
+    }
+
     execBtn(value){
         if(value === 'ac'){this._memory = []}
         else if(value === 'ce'){this._memory.pop()}
-        else if(Object.keys(this.entrys).includes(value)){this._memory.push(this.entrys[value])}
-        else{this._memory.push(value)}
+        else if(Object.keys(this.entrys).includes(value)){this.addEntry(this.entrys[value])}
+        else{this.addEntry(value)}
     }
 
     initButtonsEvent(){
