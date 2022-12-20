@@ -1,7 +1,8 @@
 class CalcController {
     constructor(){
-        this.entrys = {'igual': '=', 'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%', 'ponto': '.'};
+        this.entrys = {'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%', 'ponto': '.'};
         this._memory = [];
+        this.temp = 0;
         this.locale = 'pt-BR';
         this._displayCalcEl = document.getElementById('display');
         this._dateEl = document.getElementById('data');
@@ -13,27 +14,56 @@ class CalcController {
 
     initialize(){
         this.setDisplaDateTime();
-        setInterval(()=>{this.setDisplaDateTime()}, 60000); 
+        setInterval(()=>{this.setDisplaDateTime()}, 30000); 
     }
 
     addEventListenerAll(element, events, func){
         events.forEach(event => {element.addEventListener(event, func, false);})
     }
 
-    getLastValue(){return this._memory[this._memory.lenght - 1]}
-    getLastIndex(){return this._memory.lenght - 1}
+    getLastValue(i){return this._memory[this._memory.length - i]}
+    getLastIndex(i){return this._memory.length - i}
+    getResult(){
+        let result = eval(this._memory.join(' '));
+        if(result.toString().length > 10){result = result.toExponential(1)};
+        this._memory = [result.toString()]
+    }
 
     addEntry(value){
-        if(this._memory.length === 0){this._memory.push(value)}
-        else{this._memory.pop(this.getLastValue())}
-        
+        if((value === '.') && (isNaN(this.getLastValue(1) || this._memory.length === 0))){
+            this._memory.push('0.')
+        }
+
+        else if(this._memory.length === 0 && !isNaN(value)){
+            this._memory.push(value);
+            this.temp += 1
+        }
+        else if(!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')){
+            this._memory[this.getLastIndex(1)] = this.getLastValue(1) + value; 
+        }
+        else if(isNaN(this.getLastValue(1)) && isNaN(value)){
+            this._memory[this.getLastIndex(1)] = value
+        }
+        else{this._memory.push(value)}  
     }
 
     execBtn(value){
         if(value === 'ac'){this._memory = []}
-        else if(value === 'ce'){this._memory.pop()}
+
+        else if(value === 'ce'){
+            let lastInd = this.getLastIndex(1);
+            if(this._memory[lastInd].length === 1){this._memory.pop()}
+            else{this._memory[lastInd] = this._memory[lastInd].slice(0, -1)}
+        }
+
         else if(Object.keys(this.entrys).includes(value)){this.addEntry(this.entrys[value])}
-        else{this.addEntry(value)}
+
+        else if(value === 'igual'){
+            this.getResult()
+        }
+
+        else{this.addEntry(value)};
+        this.displayCalc = this._memory.join(' ');
     }
 
     initButtonsEvent(){
