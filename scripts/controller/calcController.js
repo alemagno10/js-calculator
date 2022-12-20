@@ -24,6 +24,12 @@ class CalcController {
 
     getLastValue(i){return this._memory[this._memory.length - i]}
     getLastIndex(i){return this._memory.length - i}
+
+    percent(bool){
+        if(bool){this._memory.pop()}
+        this._memory[this.getLastIndex(1)] = this.getLastValue(1) / 100;
+        this.getResult()
+    }
     getResult(){
         let result = eval(this._memory.join(' '));
         if(result.toString().length > 10){result = result.toFixed(8)};
@@ -34,14 +40,19 @@ class CalcController {
         if((value === '.') && (isNaN(this.getLastValue(1) || this._memory.length === 0))){
             this._memory.push('0.')
         }
+        else if(isNaN(this.getLastValue(1)) && isNaN(value)){
+            if(value === '%'){this.percent(true)}
+            else{this._memory[this.getLastIndex(1)] = value}  
+        }
+        else if(value === '%'){
+            this.getResult(); 
+            this.percent(false)
+        }
         else if(this._memory.length === 0 && !isNaN(value)){
-            this._memory.push(value);
+            this._memory.push(value)
         }
         else if(!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')){
             this._memory[this.getLastIndex(1)] = this.getLastValue(1) + value; 
-        }
-        else if(isNaN(this.getLastValue(1)) && isNaN(value)){
-            this._memory[this.getLastIndex(1)] = value
         }
         else if(this._temp && isNaN(value)){
             this.getResult()
@@ -49,7 +60,7 @@ class CalcController {
             this._temp = false;
         }
         else{
-            this._memory.push(value);
+            this._memory.push(value)
             this._temp = true;
         }  
     }
@@ -77,6 +88,7 @@ class CalcController {
             };
             this.addEntry(value);
         };
+    
         this.displayCalc = this._memory.join(' ');
     }
 
