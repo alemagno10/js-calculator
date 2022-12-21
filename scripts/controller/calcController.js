@@ -62,6 +62,12 @@ class CalcController {
         else{return false}
     }
 
+    setError(){
+        this._memory = ['0']
+        this.lastOperation = '';
+        return 'Error'; 
+    }
+
     addEntry(value){
         
         if (!isNaN(value) && this._memory[0] === '0' && this._memory.length === 1) {
@@ -159,16 +165,22 @@ class CalcController {
 
     get displayDate(){return this._dateEl}
     set displayDate(value){this._dateEl.innerHTML = value}
-
-    get displayCalc(){return this._displayCalcEl}
-    set displayCalc(value){this._displayCalcEl.innerHTML = value}
-
+    
     get currentDate(){return new Date()}
     set currentDate(value){this._currentDate = value}
-
+    
     get memory(){return this._memory}
     set memory(value){this._memory[this.getLastIndex(1)] = value}
-
+    
     get lastOperation(){return this._lastOperation}
     set lastOperation(value){this._lastOperation = value}
+
+    get displayCalc(){return this._displayCalcEl}
+    set displayCalc(value){
+        if(value.toString().length > 10 || value === 'Infinity' || value === 'NaN'){
+            value = this.setError();
+        }
+        console.log(value.toString());
+        this._displayCalcEl.innerHTML = value;
+    }
 };
