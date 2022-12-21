@@ -38,11 +38,17 @@ class CalcController {
         this._memory = [result.toString()]
     }
 
+    dot(lastValue){
+        lastValue = lastValue.split('').indexOf('.')
+        if(lastValue === -1){return true}
+        else{return false}
+    }
+
     addEntry(value){
-        if(value !== '.' && this._memory[0] == '0') {
+        if(!isNaN(value) && this._memory[0] === '0' && this._memory.length === 1) {
             this._memory.pop();
         } if((value === '.') && (isNaN(this.getLastValue(1)))) {
-            this._memory.push('0.'); console.log('aqui');
+            this._memory.push('0.');
         } else if(isNaN(this.getLastValue(1)) && isNaN(value)) {
             if(value === '%'){this.percent(true)}
             else{this.memory = value};  
@@ -51,7 +57,8 @@ class CalcController {
         } else if(this._memory.length === 0 && !isNaN(value)) {
             this._memory.push(value)
         } else if(!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')) {
-            this.memory = this.getLastValue(1) + value; 
+            if(value === '.' && !this.dot(this.getLastValue(1))){}
+            else {this.memory = this.getLastValue(1) + value}
         } else if(this._temp && isNaN(value)) {
             this.getResult();
             this._memory.push(value);
@@ -60,7 +67,6 @@ class CalcController {
             this._memory.push(value)
             this._temp = true;
         };
-        console.log('fim');
         this._resetMemory = false;
     }
 
