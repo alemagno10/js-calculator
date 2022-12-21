@@ -1,6 +1,6 @@
 class CalcController {
     constructor(){
-        this.entrys = {'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%', 'ponto': '.'};
+        this.entrys = {'multiplicacao': '*', 'divisao': '/', 'soma': '+', 'subtracao': '-', 'porcento': '%', 'ponto': '.', 'Backspace': 'ce', 'Escape': 'ac', 'Enter': 'igual', ',':'.'};
         this._memory = ['0'];
         this._lastOperation = 0;
         this._temp = false;
@@ -12,6 +12,7 @@ class CalcController {
         this._currentDate;
         this.initialize();
         this.initButtonsEvent();
+        this.initKeyboard();
     }
 
     initialize(){
@@ -45,21 +46,21 @@ class CalcController {
     }
 
     addEntry(value){
-        if(!isNaN(value) && this._memory[0] === '0' && this._memory.length === 1) {
+        if (!isNaN(value) && this._memory[0] === '0' && this._memory.length === 1) {
             this._memory.pop();
-        } if((value === '.') && (isNaN(this.getLastValue(1)))) {
+        } if ((value === '.') && (isNaN(this.getLastValue(1)))) {
             this._memory.push('0.');
-        } else if(isNaN(this.getLastValue(1)) && isNaN(value)) {
+        } else if (isNaN(this.getLastValue(1)) && isNaN(value)) {
             if(value === '%'){this.percent(true)}
             else{this.memory = value};  
-        } else if(value === '%') {
+        } else if (value === '%') {
             this.percent(false)
-        } else if(this._memory.length === 0 && !isNaN(value)) {
+        } else if (this._memory.length === 0 && !isNaN(value)) {
             this._memory.push(value)
-        } else if(!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')) {
+        } else if (!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')) {
             if(value === '.' && !this.dot(this.getLastValue(1))){}
             else {this.memory = this.getLastValue(1) + value}
-        } else if(this._temp && isNaN(value)) {
+        } else if (this._temp && isNaN(value)) {
             this.getResult();
             this._memory.push(value);
             this._temp = false;
@@ -82,8 +83,6 @@ class CalcController {
             else{this._memory[lastInd] = this._memory[lastInd].slice(0, -1)}
         }
 
-        else if(Object.keys(this.entrys).includes(value)){this.addEntry(this.entrys[value])}
-
         else if(value === 'igual'){
             if(this.memory.length === 2){this.lastOperation = this.memory[this.getLastIndex(1)] + this.memory[this.getLastIndex(2)]; this._memory.pop(); this._memory.push(this.lastOperation)}
             else if(this.memory.length > 1){this.lastOperation = this.memory[this.getLastIndex(2)] + this.memory[this.getLastIndex(1)]}
@@ -91,6 +90,8 @@ class CalcController {
             this.getResult();
             this._resetMemory = true;
         }
+
+        else if(Object.keys(this.entrys).includes(value)){this.addEntry(this.entrys[value])}
 
         else{
             if(this._resetMemory && !isNaN(value)){
@@ -112,6 +113,21 @@ class CalcController {
             });
             this.addEventListenerAll(btn, ['mouseover', 'mouseup', 'mousedown'], e=>{btn.style.cursor = 'pointer'});
         })
+    }
+
+    execKey(value){
+        if(!isNaN(value) || Object.values(this.entrys).includes(value)){
+            this.execBtn(value);
+        } else if (Object.keys(this.entrys).includes(value)){
+            this.execBtn(this.entrys[value])
+        }
+    }
+
+    initKeyboard(){
+        document.addEventListener('keyup', e=> {
+            console.log(e.key);
+            this.execKey(e.key)
+        });
     }
 
     setDisplaDateTime(){
