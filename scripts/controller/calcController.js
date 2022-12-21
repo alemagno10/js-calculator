@@ -34,39 +34,33 @@ class CalcController {
 
     getResult(){
         let result = eval(this._memory.join(' '));
-        if(result.toString().length > 10){result = result.toFixed(8)};
+        if(result.toString().length > 10){result = result.toFixed(5)};
         this._memory = [result.toString()]
     }
 
     addEntry(value){
-        if(this._memory[0] == '0'){this._memory.pop()}
-        
-        if((value === '.') && (isNaN(this.getLastValue(1) || this._memory.length === 0))){
-            this._memory.push('0.')
-        }
-        else if(isNaN(this.getLastValue(1)) && isNaN(value)){
+        if(value !== '.' && this._memory[0] == '0') {
+            this._memory.pop();
+        } if((value === '.') && (isNaN(this.getLastValue(1)))) {
+            this._memory.push('0.'); console.log('aqui');
+        } else if(isNaN(this.getLastValue(1)) && isNaN(value)) {
             if(value === '%'){this.percent(true)}
-            else{this.memory = value}  
-        }
-        else if(value === '%'){
+            else{this.memory = value};  
+        } else if(value === '%') {
             this.percent(false)
-        }
-        else if(this._memory.length === 0 && !isNaN(value)){
+        } else if(this._memory.length === 0 && !isNaN(value)) {
             this._memory.push(value)
-        }
-        else if(!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')){
+        } else if(!isNaN(this.getLastValue(1)) && (!isNaN(value) || value === '.')) {
             this.memory = this.getLastValue(1) + value; 
-        }
-        else if(this._temp && isNaN(value)){
-            this.getResult()
+        } else if(this._temp && isNaN(value)) {
+            this.getResult();
             this._memory.push(value);
             this._temp = false;
-        }
-        else{
+        } else {
             this._memory.push(value)
             this._temp = true;
-           
         };
+        console.log('fim');
         this._resetMemory = false;
     }
 
@@ -88,8 +82,6 @@ class CalcController {
             if(this.memory.length === 2){this.lastOperation = this.memory[this.getLastIndex(1)] + this.memory[this.getLastIndex(2)]; this._memory.pop(); this._memory.push(this.lastOperation)}
             else if(this.memory.length > 1){this.lastOperation = this.memory[this.getLastIndex(2)] + this.memory[this.getLastIndex(1)]}
             else{this._memory.push(this.lastOperation)};
-            console.log(this.lastOperation); 
-            console.log(this.memory);
             this.getResult();
             this._resetMemory = true;
         }
