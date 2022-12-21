@@ -103,7 +103,7 @@ class CalcController {
 
         else if(value === 'ce'){
             let lastInd = this.getLastIndex(1);
-            if(this._memory[lastInd].length === 1){this._memory.pop()}
+            if(this._memory[lastInd].length === 1){this._memory = ['0']}
             else{this._memory[lastInd] = this._memory[lastInd].slice(0, -1)}
         }
 
@@ -149,7 +149,6 @@ class CalcController {
 
     initKeyboard(){
         document.addEventListener('keyup', e=> {
-            console.log(e.key);
             this.execKey(e.key, e)
         });
     }
@@ -180,7 +179,6 @@ class CalcController {
         if(value.toString().length > 10 || value === 'Infinity' || value === 'NaN'){
             value = this.setError();
         }
-        console.log(value.toString());
         this._displayCalcEl.innerHTML = value;
     }
 };
