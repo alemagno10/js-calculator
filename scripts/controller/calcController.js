@@ -13,11 +13,28 @@ class CalcController {
         this.initialize();
         this.initButtonsEvent();
         this.initKeyboard();
+        this.pastFromClipboard();
     }
 
     initialize(){
         this.setDisplaDateTime();
         setInterval(()=>{this.setDisplaDateTime()}, 30000); 
+    }
+
+    copyToClipBoard(){
+        let input = document.createElement('input');
+        input.value = this._memory.join(' ');
+        document.body.appendChild(input);
+        input.select();
+        navigator.clipboard.writeText(input.value);
+        input.remove();
+    }
+
+    pastFromClipboard(){
+        document.addEventListener('paste', e=>{
+            let text = e.clipboardData.getData('Text');
+            if(!isNaN(text)){this.execBtn(text)};
+        })
     }
 
     addEventListenerAll(element, events, func){
@@ -46,6 +63,7 @@ class CalcController {
     }
 
     addEntry(value){
+        
         if (!isNaN(value) && this._memory[0] === '0' && this._memory.length === 1) {
             this._memory.pop();
         } if ((value === '.') && (isNaN(this.getLastValue(1)))) {
@@ -115,18 +133,18 @@ class CalcController {
         })
     }
 
-    execKey(value){
+    execKey(value, e){
         if(!isNaN(value) || Object.values(this.entrys).includes(value)){
             this.execBtn(value);
         } else if (Object.keys(this.entrys).includes(value)){
             this.execBtn(this.entrys[value])
-        }
+        } else if (value === 'c' && e.ctrlKey){this.copyToClipBoard()}
     }
 
     initKeyboard(){
         document.addEventListener('keyup', e=> {
             console.log(e.key);
-            this.execKey(e.key)
+            this.execKey(e.key, e)
         });
     }
 
