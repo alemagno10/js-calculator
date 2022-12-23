@@ -103,8 +103,10 @@ class CalcController {
 
         else if(value === 'ce'){
             let lastInd = this.getLastIndex(1);
-            if(this._memory[lastInd].length === 1){this._memory = ['0']}
-            else{this._memory[lastInd] = this._memory[lastInd].slice(0, -1)}
+            if(this._memory.length === 1 && this._memory[lastInd].length === 1){this._memory = ['0']}
+            else if(this._memory[lastInd].length === 1){this._memory.pop()}
+            else{this._memory[lastInd] = this._memory[lastInd].slice(0, -1)};
+            this._resetMemory = false;
         }
 
         else if(value === 'igual'){
@@ -176,7 +178,7 @@ class CalcController {
 
     get displayCalc(){return this._displayCalcEl}
     set displayCalc(value){
-        if(value.toString().length > 10 || value === 'Infinity' || value === 'NaN'){
+        if(value.toString().length > 12 || value === 'Infinity' || value === 'NaN'){
             value = this.setError();
         }
         this._displayCalcEl.innerHTML = value;
